@@ -6,10 +6,9 @@ CC = gcc
 CFLAGS = -Wall -Werror -Wextra
 
 LIBFT_DIR = libft/
-SRC_DIR = src/
 
 # Sources
-SRC = pipex.c
+SRC = main.c pipex.c
 
 OBJS =	$(SRC:.c=.o)
 
@@ -19,6 +18,9 @@ INCLUDE = -L ./libft -lft
 $(NAME):$(OBJS)
 	make -C $(LIBFT_DIR)
 	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME) $(INCLUDE)
+
+# Recompile object files if pipex.h changes  
+$(OBJS): pipex.h
 
 # Default target for compilation
 all: $(NAME)
