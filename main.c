@@ -3,14 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/08 14:58:37 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/09 11:00:58 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	print_error(char *error_explain, int error_code)
+{
+	ft_putstr_fd(error_explain, STDERR_FILENO);
+	exit(error_code);
+}
 
 void	free_matrix(char **matrix)
 {
@@ -24,49 +30,59 @@ void	free_matrix(char **matrix)
 	}
 	free(matrix);
 }
-
-char	*get_path(char *cmd, char **envp)
+char	*find_route(char *instruction, char *path)
 {
-	char	**instructions;
+	char	**routes;
+	char	*route;
+	char	*cmd_route;
+	int		i;
+	
+	routes = ft_split(path, ':');
+	if (!routes)
+		return (0);
+	i = 0;
+	while (routes[i])
+	{
+		route = ft_strjoin(routes[i], "/");
+		cmd_route = ft_strjoin(route, instruction);
+		free(route);
+		if (access(cmd_route, F_OK) == 0)
+		{
+			free_matrix(routes);
+			printf("    RUTA '%s' = %s\n", instruction, cmd_route); //TODO: comentar
+			return (cmd_route);
+		}
+		free(cmd_route);
+		i++;
+	}
+	free_matrix(routes);
+	return (NULL);
+}
+char	*get_route(char *cmd, char **envp)
+{
 	int		i;
 	int		in_line;
-	char	**paths;
-	char	*route;
-	char	*cmd_in_route;
+	char	**instructions;
+	char	*cmd_route;
 
 	i = 0;
 	in_line = i;
 	while (envp[i] && in_line == 0)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-		{
 			in_line = i;
-			printf("%s\n", envp[in_line]);
-		}
 		i++;
 	}
+	if (in_line == 0)
+		print_error("No se encontró la variable de entorno 'PATH'", 255); //TODO: revisar código error
 	instructions = ft_split(cmd, ' ');
     if (!instructions)
         return (NULL);
-	paths = ft_split(&envp[in_line][5], ':');
-	i = 0;
-	while (paths[i])
-	{
-		route = ft_strjoin(paths[i], "/");
-		cmd_in_route = ft_strjoin(route, instructions[0]);
-		free(route);
-		if (access(cmd_in_route, F_OK) == 0)
-		{
-			free(paths);
-			printf("    RUTA = %s\n", cmd_in_route);
-			return (cmd_in_route);
-		}
-		free(cmd_in_route);
-		i++;
-	}
-	free_matrix(paths);
+		cmd_route = find_route(instructions[0], &envp[in_line][5]);
+	if (!cmd_route)
+		return (NULL);
     free_matrix(instructions);
-	return (NULL);
+	return (cmd_route);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -74,23 +90,20 @@ int	main(int argc, char **argv, char **envp)
 {
 	char *cmd1;
 	char *cmd2;
-	char *path_cmd1;
-	char *path_cmd2;
+	char *cmd1_route;
+	char *cmd2_route;
 
 	(void)argc;
-	/*if (argc != 5) // ejecutable + archivo 1 + comando 1 + comando 2
-		+ archivo 2 == 5
-		prnt_error()
-			// TODO: funcion que imprima error (nº argumentos incorrecto) por el fd=2 (STDERR) y retorne un código de error*/
+	if (argc != 5) // ejecutable + archivo 1 + comando 1 + comando 2 + archivo 2 == 5
+		print_error("Número de argumentos incorrecto", 255); //TODO: revisar código error
 	cmd1 = argv[2];
 	cmd2 = argv[3];
-	path_cmd1 = get_path(cmd1, envp);
-	path_cmd2 = get_path(cmd2, envp);
-	/* if (!path_cmd1 || !path_cmd2)
-		prnt_error()
-			// TODO: funcion que imprima error (comando no encontrado) por el fd=2 (STDERR) y retorne un código de error*/
-	// pipex(argv, envp, path_cmd1, path_cmd2); */
-	free(path_cmd1);
-	free(path_cmd2);
+	cmd1_route = get_route(cmd1, envp);
+	cmd2_route = get_route(cmd2, envp);
+	if (!cmd1_route || !cmd2_route)
+		print_error("Comando no encontrado", 255); //TODO: revisar código error
+	// pipex(argv, envp, cmd1_route, cmd2_route);
+	free(cmd1_route);
+	free(cmd2_route);
 	return (0);
 }
