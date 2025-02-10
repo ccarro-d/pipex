@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 12:10:13 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 02:19:39 by cesar            ###   ########.fr       */
+/*   Updated: 2025/02/10 02:24:10 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	exec_cmd1(char **argv, char **env, char **cmd_routes, int *pipe_fds)
 
 	cmd1 = ft_split(argv[2], ' ');
     if (!cmd1)
-        pipex_error(cmd_routes, "Error durante la ejecución", 255);
+        pipex_error(cmd_routes, "Error procesando el primer comando", 255);
 	fd_filein = open(argv[1], O_RDONLY);
 	if (fd_filein < 0)
     {
@@ -65,7 +65,7 @@ void	exec_cmd2(char **argv, char **env, char **cmd_routes, int *pipe_fds)
 
 	cmd2 = ft_split(argv[3], ' ');
     if (!cmd2)
-        pipex_error(cmd_routes, "Error durante la ejecución", 255);
+        pipex_error(cmd_routes, "Error procesando el segundo comando", 255);
 	fd_fileout = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	if (fd_fileout < 0)
     {
