@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 02:30:24 by cesar            ###   ########.fr       */
+/*   Updated: 2025/02/10 02:32:48 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	free_matrix(char **matrix)
 	}
 	free(matrix);
 }
+
 char	*find_route(char *instruction, char *path)
 {
 	char	**routes;
@@ -57,6 +58,7 @@ char	*find_route(char *instruction, char *path)
 	free_matrix(routes);
 	return (NULL);
 }
+
 char	*get_route(char *cmd, char **envp)
 {
 	int		i;
