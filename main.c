@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/09 22:24:16 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/10 02:01:17 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	print_error(char *error_explain, int error_code)
+void	print_error(char *error_explained, int error_code)
 {
-	ft_putstr_fd(error_explain, STDERR_FILENO);
+	ft_putstr_fd(error_explained, STDERR_FILENO);
 	exit(error_code);
 }
 
@@ -49,8 +49,6 @@ char	*find_route(char *instruction, char *path)
 		if (access(cmd_route, F_OK) == 0)
 		{
 			free_matrix(routes);
-			// printf("    RUTA '%s' = %s\n", instruction, cmd_route);
-				//TODO: comentar
 			return (cmd_route);
 		}
 		free(cmd_route);
@@ -67,46 +65,49 @@ char	*get_route(char *cmd, char **envp)
 	char	*cmd_route;
 
 	i = 0;
-	in_line = i;
-	while (envp[i] && in_line == 0)
+	in_line = -1;
+	while (envp[i] && in_line == -1)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 			in_line = i;
 		i++;
 	}
-	if (in_line == 0)
+	if (in_line == -1)
 		print_error("No se encontró la variable de entorno 'PATH'", 255);
-			// TODO: revisar código error
 	instructions = ft_split(cmd, ' ');
 	if (!instructions)
 		return (NULL);
 	cmd_route = find_route(instructions[0], &envp[in_line][5]);
-	if (!cmd_route)
-		return (NULL);
 	free_matrix(instructions);
+	if (!cmd_route)
+	return (NULL);
 	return (cmd_route);
 }
 
 int	main(int argc, char **argv, char **envp)
-// evnp es un tipo de input que puede tener main que equivale al contenido del comando "env" en la consola
 {
 	char *cmd1;
 	char *cmd2;
 	char *cmd1_route;
 	char *cmd2_route;
-
+	
 	(void)argc;
-	if (argc != 5)                                           // ejecutable
-		+ archivo 1 + comando 1 + comando 2 + archivo 2 == 5
-		print_error("Número de argumentos incorrecto", 255);
-			// TODO: revisar código error
+	if (argc != 5)
+	print_error("Número de argumentos incorrecto", 255);
 	cmd1 = argv[2];
 	cmd2 = argv[3];
 	cmd1_route = get_route(cmd1, envp);
+	if (!cmd1_route)
+		print_error("Primer omando no encontrado", 255);
+	printf("    RUTA CMD1 = %s\n", cmd1_route);
 	cmd2_route = get_route(cmd2, envp);
-	if (!cmd1_route || !cmd2_route)
-		print_error("Comando no encontrado", 255); // TODO: revisar código error
-	// pipex(argv, envp, cmd1_route, cmd2_route);
+	if (!cmd2_route)
+	{
+		free(cmd1_route);
+		print_error("Segundo comando no encontrado", 255);
+	}
+	printf("    RUTA CMD2 = %s\n", cmd2_route);
+	pipex(argv, envp, cmd1_route, cmd2_route);
 	free(cmd1_route);
 	free(cmd2_route);
 	return (0);
