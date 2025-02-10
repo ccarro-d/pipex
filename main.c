@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 02:01:17 by cesar            ###   ########.fr       */
+/*   Updated: 2025/02/10 02:30:24 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,12 @@ int	main(int argc, char **argv, char **envp)
 	cmd1_route = get_route(cmd1, envp);
 	if (!cmd1_route)
 		print_error("Primer omando no encontrado", 255);
-	printf("    RUTA CMD1 = %s\n", cmd1_route);
 	cmd2_route = get_route(cmd2, envp);
 	if (!cmd2_route)
 	{
 		free(cmd1_route);
 		print_error("Segundo comando no encontrado", 255);
 	}
-	printf("    RUTA CMD2 = %s\n", cmd2_route);
 	pipex(argv, envp, cmd1_route, cmd2_route);
 	free(cmd1_route);
 	free(cmd2_route);
