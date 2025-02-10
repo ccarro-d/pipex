@@ -6,7 +6,7 @@
 /*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/30 19:15:40 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/01/31 15:23:58 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/10 21:00:01 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	ft_countsubs(const char *s, char c)
 			{
 				i++;
 			}
-		}		
+		}
 		else
 			i++;
 	}

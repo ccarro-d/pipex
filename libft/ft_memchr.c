@@ -6,7 +6,7 @@
 /*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/28 20:26:44 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/01/31 15:24:11 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/10 20:59:24 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void	*ft_memchr(const void *s, int c, size_t n)
 		{
 			return ((void *)str);
 		}
-	str++;
-	n--;
+		str++;
+		n--;
 	}
 	return (NULL);
 }

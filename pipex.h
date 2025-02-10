@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:36:17 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 02:12:54 by cesar            ###   ########.fr       */
+/*   Updated: 2025/02/10 18:34:16 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@
 # define END "\e[0m"
 
 # include <errno.h>
+# include <fcntl.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-# include <fcntl.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
@@ -42,8 +42,8 @@ void	print_error(char *error_explained, int error_code);
 void	free_matrix(char **matrix);
 char	*find_route(char *instruction, char *path);
 char	*get_route(char *cmd, char **envp);
-void    free_routes(char **cmd_routes);
-void    pipex_error(char **cmd_routes, char *error_explained, int error_code);
+void	free_routes(char **cmd_routes);
+void	pipex_error(char **cmd_routes, char *error_explained, int error_code);
 void	exec_cmd1(char **argv, char **env, char **cmd_routes, int *pipe_fd);
 void	exec_cmd2(char **argv, char **env, char **cmd_routes, int *pipe_fd);
 void	pipex(char **argv, char **envp, char *cmd1_route, char *cmd2_route);
