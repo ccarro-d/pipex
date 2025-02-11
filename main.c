@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 20:37:31 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/12 00:29:22 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ int	main(int argc, char **argv, char **envp)
 	char	*cmd1_route;
 	char	*cmd2_route;
 
-	(void)argc;
 	if (argc != 5)
 		print_error("Número de argumentos incorrecto", 1);
 	cmd1 = argv[2];
