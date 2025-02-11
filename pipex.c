@@ -6,7 +6,7 @@
 /*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 12:10:13 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/02/10 21:00:48 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:43:34 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,5 +115,5 @@ void	pipex(char **argv, char **envp, char *cmd1_route, char *cmd2_route)
 	waitpid(cmd2, NULL, 0);
 	return ;
 }
-//  grep x infile.txt | wc > outfile.txt
-//  ./pipex "infile.txt" "grep x" "wc" "outfile.txt"
+//  Ejemplo usando el operador pipe:	grep x infile.txt | wc > outfile.txt
+//  Ejemplo usando el programa pipex:	./pipex "infile.txt" "grep x" "wc" "outfile.txt"
