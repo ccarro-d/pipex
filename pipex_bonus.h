@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:36:17 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/05 00:47:14 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/10 14:04:05 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,29 @@ typedef struct s_pipe
 	int		cmd_nbr;
 	char	**cmds;
 	char	**cmd_routes;
-	char	*files[2];
+	char	*filein;
+	char	*fileout;
 	char	**env;
 	int		pipe_fds[2];
 	pid_t	*cmd_ids;
 }	t_pipe;
 
-// Functions
-void	print_error(char *error_explained, char *cmd, int error_code);
-void	free_matrix(char **matrix);
+// main.c functions
 char	*find_route(char *instruction, char *path);
 char	*get_route(char *cmd, char **envp);
-void	free_routes(char **cmd_routes);
-void	pipex_error(char **cmd_routes, char *error_explained, char *cmd, int error_code);
-void	exec_cmd1(char **argv, char **env, char **cmd_routes, int *pipe_fd);
-void	exec_cmd2(char **argv, char **env, char **cmd_routes, int *pipe_fd);
-void	pipex(char **argv, char **envp, char *cmd1_route, char *cmd2_route);
+void	get_cmds_and_routes(char **argv, t_pipe *pipe);
+
+// pipex.c functions
+void	pipex(t_pipe *piped);
+void	exec_cmd(t_pipe *piped, int *pipe_fds, int cmd_pos);
+void	exec_intermediate_cmd(t_pipe *piped, int *pipe_fds, int cmd_pos);
+void	exec_last_cmd(t_pipe *piped, int *pipe_fds, int cmd_pos);
+void	exec_first_cmd(t_pipe *piped, int *pipe_fds, int cmd_pos);
+
+//utils.c functions
+void	print_error(char *error_msg, char *cmd, int error_code);
+void	free_matrix(char **matrix);
+void	ft_error(t_pipe *pipe, char *error_msg, int cmd_pos, int error_code);
+void	pipex_error(t_pipe *piped, char *error_msg, int cmd_pos, int error_code);
 
 #endif
