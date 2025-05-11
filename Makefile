@@ -3,7 +3,7 @@ NAME = pipex
 
 # Compilation
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -I gnl/
 
 LIBFT_DIR = libft/
 
@@ -11,6 +11,11 @@ LIBFT_DIR = libft/
 SRC = main.c pipex.c
 
 OBJS =	$(SRC:.c=.o)
+
+BONUS = bonus/main_bonus.c bonus/pipex_bonus.c bonus/utils_bonus.c \
+		gnl/get_next_line.c gnl/get_next_line_utils.c
+
+BONUS_OBJS = $(BONUS:.c=.o)
 
 # Linking
 INCLUDE = -L ./libft -lft
@@ -27,8 +32,8 @@ all: $(NAME)
 
 # Clean objects
 clean:
-	rm -f $(OBJS)
-	cd $(LIBFT_DIR) && $(MAKE) clean
+	rm -f $(OBJS) $(BONUS_OBJS)
+	make -C $(LIBFT_DIR) clean
 
 # Clean objects and executable
 fclean: clean
@@ -38,5 +43,15 @@ fclean: clean
 # Clean objects and executable and then compilation but just OBJS
 re: fclean all
 
+# Bonus
+bonus: $(BONUS_OBJS)
+	make -C $(LIBFT_DIR)
+	@$(CC) $(CFLAGS) $(BONUS_OBJS) -o pipex_bonus $(INCLUDE)
+
+rebonus: fclean bonus
+
+# Recompile bonus object files if pipex_bonus.h changes  
+$(BONUS_OBJS): bonus/pipex_bonus.h
+
 # Key words
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus rebonus

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/10 13:42:31 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/05/12 00:00:47 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ char	*find_route(char *instruction, char *path)
 	char	*route;
 	char	*cmd_route;
 	int		i;
-
 	routes = ft_split(path, ':');
 	if (!routes)
 		return (0);
@@ -56,7 +55,7 @@ char	*get_route(char *cmd, char **envp)
 		i++;
 	}
 	if (in_line == -1)
-		print_error("Variable de entorno 'PATH' no encontrada", NULL, 127);
+		print_error(NULL, "Variable de entorno 'PATH' no encontrada", -1, 127);
 	instructions = ft_split(cmd, ' ');
 	if (!instructions)
 		return (NULL);
@@ -69,20 +68,56 @@ char	*get_route(char *cmd, char **envp)
 
 void	get_cmds_and_routes(char **argv, t_pipe *piped)
 {
+	int	first_cmd_pos;
 	int	i;
 
-	i = 0;
+	piped->cmds = (char **)ft_calloc(piped->cmd_nbr + 1, sizeof(char *));
+	if (!piped->cmds)
+		print_error(NULL, "Error reservando memoria\n", -1, 1);
+	piped->cmd_routes = (char **)ft_calloc(piped->cmd_nbr + 1, sizeof(char *));
+	if (!piped->cmd_routes)
+		print_error(NULL, "Error reservando memoria\n", -1, 1);
+	if (!piped->here_doc)
+		first_cmd_pos = 2;
+	else
+		first_cmd_pos = 3;
+	i = -1;
 	while (++i < piped->cmd_nbr)
 	{
-		piped->cmds[i] = ft_strdup(argv[piped->cmd_nbr + i + 2]);
+		piped->cmds[i] = ft_strdup(argv[i + first_cmd_pos]);
 		if (!piped->cmds[i])
-			ft_error(&piped, "Error reservando memoria\n", NULL, 127);
+			print_error(piped, "Error reservando memoria para cmd \n", i, 127);
 		piped->cmd_routes[i] = get_route(piped->cmds[i], piped->env);
 		if (!piped->cmd_routes[i])
-			ft_error(&piped, "No se encontró el comando: ", i, 127);
-		i++;
+			print_error(piped, "No se encontró el comando: ", i, 127);
 	}
-	return ;
+	piped->cmds[i] = NULL;
+	piped->cmd_routes[i] = NULL;
+}
+
+void	appropiate_input(t_pipe *piped, char **argv)
+{
+	char	*line;
+	int		is_delimiter;
+	
+	if (!piped->here_doc)
+	{
+		piped->filein = argv[1];
+		return ;
+	}
+	if (pipe(piped->heredoc_pipe_fds) == -1)
+		pipex_error(piped, "No se pudo crear el here_doc pipe", -1, errno);
+	pipe(piped->heredoc_pipe_fds);
+	is_delimiter = 0;
+	while (!is_delimiter)
+	{
+		write(1, "> ", 2);
+		line = get_next_line(0);
+		if (ft_strncmp(line, piped->delimiter, ft_strlen(piped->delimiter)) == 0)
+			is_delimiter = 1;
+		write(piped->heredoc_pipe_fds[1], line, ft_strlen(line));
+	}
+	close(piped->heredoc_pipe_fds[1]);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -90,19 +125,25 @@ int	main(int argc, char **argv, char **envp)
 	t_pipe	piped;
 
 	if (argc < 5)
-		print_error("Número de argumentos insuficiente\n", NULL, 1);
-	piped.cmd_nbr = argc - 3; // Descontando ejecutable + archivo in y out
-	piped.cmds = (char **)ft_calloc(piped.cmd_nbr, sizeof(char *));
-	if (!piped.cmds)
-		print_error("Error reservando memoria\n", NULL, 1);
-	piped.cmd_routes = (char **)ft_calloc(piped.cmd_nbr, sizeof(char *));
-	if (!piped.cmd_routes)
-		print_error("Error reservando memoria\n", NULL, 1);
+		print_error(NULL, "Número de argumentos insuficiente\n", -1, 1);
+	if (ft_strncmp(argv[1], "here_doc", 3) == 0)
+	{
+		piped.here_doc = 1;
+		piped.delimiter = argv[2];
+		piped.cmd_nbr = argc - 4; // Descontando ejecutable + here_doc + limitador + archivo out
+	}
+	else
+	{
+		piped.here_doc = 0;
+		piped.delimiter = NULL;
+		piped.cmd_nbr = argc - 3; // Descontando ejecutable + archivo in y out
+	}
 	piped.env = envp;
 	get_cmds_and_routes(argv, &piped);
-	piped.filein = argv[1];
+	appropiate_input(&piped, argv);
 	piped.fileout = argv[argc - 1];
-	//pipex(&piped);
+	print_struct(&piped); // para debugging
+	pipex(&piped);
 	free_matrix(piped.cmds);
 	free_matrix(piped.cmd_routes);
 	return (0);
