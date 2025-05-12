@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/12 00:00:47 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/13 01:44:19 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,14 @@ void	appropiate_input(t_pipe *piped, char **argv)
 		line = get_next_line(0);
 		if (ft_strncmp(line, piped->delimiter, ft_strlen(piped->delimiter)) == 0)
 			is_delimiter = 1;
-		write(piped->heredoc_pipe_fds[1], line, ft_strlen(line));
+		else
+		{
+			write(piped->heredoc_pipe_fds[1], line, ft_strlen(line));
+			if (line[ft_strlen(line) - 1] != '\n')
+				write(piped->heredoc_pipe_fds[1], "\n", 1);
+		}
+		free (line);
 	}
-	close(piped->heredoc_pipe_fds[1]);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -142,7 +147,7 @@ int	main(int argc, char **argv, char **envp)
 	get_cmds_and_routes(argv, &piped);
 	appropiate_input(&piped, argv);
 	piped.fileout = argv[argc - 1];
-	print_struct(&piped); // para debugging
+	//print_struct(&piped); // para debugging
 	pipex(&piped);
 	free_matrix(piped.cmds);
 	free_matrix(piped.cmd_routes);

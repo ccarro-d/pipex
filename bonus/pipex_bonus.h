@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:36:17 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/12 00:19:42 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/12 21:51:33 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,10 @@ typedef struct s_pipe
 	char	*filein;
 	char	*fileout;
 	char	**env;
-	int		*main_pipe_fds[2];
 	int		heredoc_pipe_fds[2];
-	pid_t	*cmd_ids;
+	int		current_pipe_fds[2];
+	int		previous_pipe_fd;
+	pid_t	cmd_id;
 }	t_pipe;
 
 // main.c functions

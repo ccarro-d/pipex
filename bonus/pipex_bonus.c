@@ -6,7 +6,7 @@
 /*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 12:10:13 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/12 00:25:05 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/13 01:23:09 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,12 @@ void	exec_first_cmd(t_pipe *piped, int cmd_pos)
 		free_matrix(cmd_instr);
 		pipex_error(piped, "No pudo abrir archivo de entrada", cmd_pos, errno);
 	}
-	close(piped->main_pipe_fds[0]);
+	close(piped->heredoc_pipe_fds[1]);
+	close(piped->current_pipe_fds[0]);
 	dup2(fd_filein, STDIN_FILENO);
 	close(fd_filein);
-	dup2(piped->main_pipe_fds[1], STDOUT_FILENO);
-	close(piped->main_pipe_fds[1]);
+	dup2(piped->current_pipe_fds[1], STDOUT_FILENO);
+	close(piped->current_pipe_fds[1]);
 	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
 	{
 		free_matrix(cmd_instr);
@@ -53,14 +54,13 @@ void	exec_last_cmd(t_pipe *piped, int cmd_pos)
 		fd_fileout = open(piped->fileout, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	else
 		fd_fileout = open(piped->fileout, O_CREAT | O_RDWR | O_APPEND, 0644);
-	if (fd_fileout < 0)
+		if (fd_fileout < 0)
 	{
 		free_matrix(cmd_instr);
 		pipex_error(piped, "No pudo abrir archivo de salida", cmd_pos, errno);
 	}
-	close(piped->main_pipe_fds[1]);
-	dup2(piped->main_pipe_fds[0], STDIN_FILENO);
-	close(piped->main_pipe_fds[0]);
+	dup2(piped->previous_pipe_fd, STDIN_FILENO);
+	close(piped->previous_pipe_fd);
 	dup2(fd_fileout, STDOUT_FILENO);
 	close(fd_fileout);
 	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
@@ -77,10 +77,10 @@ void	exec_intermediate_cmd(t_pipe *piped, int cmd_pos)
 	cmd_instr = ft_split(piped->cmds[cmd_pos], ' ');
 	if (!cmd_instr)
 		pipex_error(piped, "Error procesando comando intermedio", cmd_pos, 2);
-	dup2(piped->main_pipe_fds[0], STDIN_FILENO);
-	close(piped->main_pipe_fds[0]);
-	dup2(piped->main_pipe_fds[1], STDOUT_FILENO);
-	close(piped->main_pipe_fds[1]);
+	dup2(piped->previous_pipe_fd, STDIN_FILENO);
+	close(piped->previous_pipe_fd);
+	dup2(piped->current_pipe_fds[1], STDOUT_FILENO);
+	close(piped->current_pipe_fds[1]);
 	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
 	{
 		free_matrix(cmd_instr);
@@ -100,32 +100,36 @@ void	exec_cmd(t_pipe *piped, int cmd_pos)
 
 void	pipex(t_pipe *piped)
 {
-	pid_t	*cmd_ids;
-	int		i;
-	piped->cmds = (char **)ft_calloc(piped->cmd_nbr + 1, sizeof(char *));
-	piped->main_pipe_fds = (int **)malloc(sizeof(int *) * piped->cmd_nbr);
-	if (!cmd_ids)
-		pipex_error(piped, "No se pudo reservar memoria para cmd_ids", -1, 1);
-	if (pipe(piped->main_pipe_fds) == -1)
-		pipex_error(piped, "No se pudo crear el pipe", -1, errno);
-	cmd_ids = (pid_t *)malloc(sizeof(pid_t) * piped->cmd_nbr);
-	if (!cmd_ids)
-		pipex_error(piped, "No se pudo reservar memoria para cmd_ids", -1, 1);
-	i = -1;
-		while (++i < piped->cmd_nbr)
+	//int		current_pipe_fds[2];
+	//int		previous_pipe_fd;
+	int		cmd_pos;
+	//pid_t	cmd_id;
+	
+	piped->previous_pipe_fd = -1;
+	cmd_pos = -1;
+	while (++cmd_pos < piped->cmd_nbr)
 	{
-		cmd_ids[i] = fork();
-		if (cmd_ids[i] < 0)
-			pipex_error(piped, "Error iniciando subproceso: ", i, errno);
-		if (cmd_ids[i] == 0)
-			exec_cmd(piped, i);
+		if (cmd_pos < piped->cmd_nbr - 1 && pipe(piped->current_pipe_fds) == -1)
+			pipex_error(piped, "No se pudo crear el pipe", -1, errno);
+		piped->cmd_id = fork();
+		if (piped->cmd_id < 0)
+			pipex_error(piped, "Error iniciando subproceso: ", cmd_pos, errno);
+		if (piped->cmd_id == 0)
+			exec_cmd(piped, cmd_pos);
+		if (piped->previous_pipe_fd != -1)
+			close(piped->previous_pipe_fd);
+		if (piped->here_doc && cmd_pos == 0)
+		{
+			close(piped->heredoc_pipe_fds[0]);
+			close(piped->heredoc_pipe_fds[1]);
+		}
+		if (cmd_pos < piped->cmd_nbr - 1)
+		{
+			close(piped->current_pipe_fds[1]);
+			piped->previous_pipe_fd = piped->current_pipe_fds[0];
+		}
+		waitpid(piped->cmd_id, NULL, 0);
 	}
-	close(piped->main_pipe_fds[0]);
-	close(piped->main_pipe_fds[1]);
-	i = -1;
-	while (++i < piped->cmd_nbr)
-		waitpid(cmd_ids[i], NULL, 0);
-	free(cmd_ids);
 }
 //  Ejemplo usando el operador pipe:	grep x infile.txt | wc > outfile.txt
 //  Ejemplo usando el programa pipex:	./pipex "infile.txt" "grep x" "wc" "outfile.txt"

@@ -1,5 +1,6 @@
 # Exit
 NAME = pipex
+NAME_BONUS = pipex_bonus
 
 # Compilation
 CC = gcc
@@ -37,7 +38,7 @@ clean:
 
 # Clean objects and executable
 fclean: clean
-	rm -f $(NAME)
+	rm -f $(NAME) $(NAME_BONUS)
 	cd $(LIBFT_DIR) && $(MAKE) fclean
 
 # Clean objects and executable and then compilation but just OBJS
@@ -46,7 +47,7 @@ re: fclean all
 # Bonus
 bonus: $(BONUS_OBJS)
 	make -C $(LIBFT_DIR)
-	@$(CC) $(CFLAGS) $(BONUS_OBJS) -o pipex_bonus $(INCLUDE)
+	@$(CC) $(CFLAGS) $(BONUS_OBJS) -o $(NAME_BONUS) $(INCLUDE)
 
 rebonus: fclean bonus
 
