@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 12:10:13 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/13 01:23:09 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/13 20:00:12 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	exec_last_cmd(t_pipe *piped, int cmd_pos)
 		fd_fileout = open(piped->fileout, O_CREAT | O_RDWR | O_TRUNC, 0644);
 	else
 		fd_fileout = open(piped->fileout, O_CREAT | O_RDWR | O_APPEND, 0644);
-		if (fd_fileout < 0)
+	if (fd_fileout < 0)
 	{
 		free_matrix(cmd_instr);
 		pipex_error(piped, "No pudo abrir archivo de salida", cmd_pos, errno);
@@ -104,7 +104,7 @@ void	pipex(t_pipe *piped)
 	//int		previous_pipe_fd;
 	int		cmd_pos;
 	//pid_t	cmd_id;
-	
+
 	piped->previous_pipe_fd = -1;
 	cmd_pos = -1;
 	while (++cmd_pos < piped->cmd_nbr)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/11 21:38:17 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/13 21:19:09 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	print_matrix(char *matrix_name, char **matrix_content)
 		printf("%s n%d = %s\n", matrix_name, i + 1, matrix_content[i]);
 		i++;
 	}
-	return;
+	return ;
 }
 
 void	print_struct(t_pipe *piped)
@@ -40,7 +40,7 @@ void	print_struct(t_pipe *piped)
 	print_matrix(">>> cmd", piped->cmds);
 	print_matrix(">>> cmd_route", piped->cmd_routes);
 	printf("\n\n\n");
-	return;
+	return ;
 }
 
 void	free_matrix(char **matrix)

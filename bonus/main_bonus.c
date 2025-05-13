@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/13 01:44:19 by cesar            ###   ########.fr       */
+/*   Updated: 2025/05/13 20:23:53 by ccarro-d         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ char	*find_route(char *instruction, char *path)
 	char	*route;
 	char	*cmd_route;
 	int		i;
+
 	routes = ft_split(path, ':');
 	if (!routes)
 		return (0);
@@ -99,7 +100,7 @@ void	appropiate_input(t_pipe *piped, char **argv)
 {
 	char	*line;
 	int		is_delimiter;
-	
+
 	if (!piped->here_doc)
 	{
 		piped->filein = argv[1];
@@ -147,7 +148,7 @@ int	main(int argc, char **argv, char **envp)
 	get_cmds_and_routes(argv, &piped);
 	appropiate_input(&piped, argv);
 	piped.fileout = argv[argc - 1];
-	//print_struct(&piped); // para debugging
+	print_struct(&piped); // para debugging
 	pipex(&piped);
 	free_matrix(piped.cmds);
 	free_matrix(piped.cmd_routes);
