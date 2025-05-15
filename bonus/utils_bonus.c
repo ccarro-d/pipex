@@ -3,45 +3,49 @@
 /*                                                        :::      ::::::::   */
 /*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/13 21:19:09 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/05/15 12:56:36 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	print_matrix(char *matrix_name, char **matrix_content)
-{
-	int	i;
+/*
+** void	print_matrix(char *matrix_name, char **matrix_content)
+** {
+** 	int	i;
+** 
+** 	i = 0;
+** 	while (matrix_content[i])
+** 	{
+** 		printf("%s n%d = %s\n", matrix_name, i + 1, matrix_content[i]);
+** 		i++;
+** 	}
+** 	return ;
+** }
+*/
 
-	i = 0;
-	while (matrix_content[i])
-	{
-		printf("%s n%d = %s\n", matrix_name, i + 1, matrix_content[i]);
-		i++;
-	}
-	return ;
-}
-
-void	print_struct(t_pipe *piped)
-{
-	printf("PRINT STRUCT\n");
-	if (piped->here_doc)
-	{
-		printf(">>> here_doc = true && delimiter = %s\n", piped->delimiter);
-		printf(">>> heredoc_pipe_fds = %dd && %d\n", piped->heredoc_pipe_fds[0], piped->heredoc_pipe_fds[1]);
-	}
-	else
-		printf(">>> infile = %s\n", piped->filein);
-	printf(">>> outfile = %s\n", piped->fileout);
-	printf(">>> commands number = %d\n", piped->cmd_nbr);
-	print_matrix(">>> cmd", piped->cmds);
-	print_matrix(">>> cmd_route", piped->cmd_routes);
-	printf("\n\n\n");
-	return ;
-}
+/*
+** void	print_struct(t_pipe *piped)
+** {
+** 	printf("PRINT STRUCT\n");
+** 	if (piped->here_doc)
+** 	{
+** 		printf(">>> here_doc = true && delimiter = %s\n", piped->delimiter);
+** 		printf(">>> heredoc_pipe_fds = %dd && %d\n", piped->heredoc_pipe_fds[0], piped->heredoc_pipe_fds[1]);
+** 	}
+** 	else
+** 		printf(">>> infile = %s\n", piped->filein);
+** 	printf(">>> outfile = %s\n", piped->fileout);
+** 	printf(">>> commands number = %d\n", piped->cmd_nbr);
+** 	print_matrix(">>> cmd", piped->cmds);
+** 	print_matrix(">>> cmd_route", piped->cmd_routes);
+** 	printf("\n\n\n");
+** 	return ;
+** }
+*/
 
 void	free_matrix(char **matrix)
 {

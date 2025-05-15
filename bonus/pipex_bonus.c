@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 12:10:13 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/13 20:00:12 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/05/15 12:50:32 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	exec_first_cmd(t_pipe *piped, int cmd_pos)
 {
 	char	**cmd_instr;
 	int		fd_filein;
-
+	
 	cmd_instr = ft_split(piped->cmds[cmd_pos], ' ');
 	if (!cmd_instr)
 		pipex_error(piped, "Error procesando el primer comando", cmd_pos, 2);
@@ -24,22 +24,22 @@ void	exec_first_cmd(t_pipe *piped, int cmd_pos)
 		fd_filein = open(piped->filein, O_RDONLY);
 	else
 		fd_filein = piped->heredoc_pipe_fds[0];
+	if (piped->here_doc)
+		close(piped->heredoc_pipe_fds[1]);	
 	if (fd_filein < 0)
 	{
 		free_matrix(cmd_instr);
 		pipex_error(piped, "No pudo abrir archivo de entrada", cmd_pos, errno);
 	}
-	close(piped->heredoc_pipe_fds[1]);
 	close(piped->current_pipe_fds[0]);
 	dup2(fd_filein, STDIN_FILENO);
 	close(fd_filein);
 	dup2(piped->current_pipe_fds[1], STDOUT_FILENO);
 	close(piped->current_pipe_fds[1]);
-	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
-	{
-		free_matrix(cmd_instr);
-		pipex_error(piped, "Error ejecutando primer comando", cmd_pos, errno);
-	}
+	execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env);
+	// cualquier código que venga después solo se ejecuta si execve() falla, ya que reemplaza el proceso en caso de éxito
+	free_matrix(cmd_instr);
+	pipex_error(piped, "Error ejecutando primer comando", cmd_pos, errno);
 }
 
 void	exec_last_cmd(t_pipe *piped, int cmd_pos)
@@ -63,11 +63,10 @@ void	exec_last_cmd(t_pipe *piped, int cmd_pos)
 	close(piped->previous_pipe_fd);
 	dup2(fd_fileout, STDOUT_FILENO);
 	close(fd_fileout);
-	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
-	{
-		free_matrix(cmd_instr);
-		pipex_error(piped, "Error ejecutando último comando", cmd_pos, errno);
-	}
+	execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env);
+	// cualquier código que venga después solo se ejecuta si execve() falla, ya que reemplaza el proceso en caso de éxito
+	free_matrix(cmd_instr);
+	pipex_error(piped, "Error ejecutando último comando", cmd_pos, errno);
 }
 
 void	exec_intermediate_cmd(t_pipe *piped, int cmd_pos)
@@ -81,11 +80,10 @@ void	exec_intermediate_cmd(t_pipe *piped, int cmd_pos)
 	close(piped->previous_pipe_fd);
 	dup2(piped->current_pipe_fds[1], STDOUT_FILENO);
 	close(piped->current_pipe_fds[1]);
-	if (execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env) == -1)
-	{
-		free_matrix(cmd_instr);
-		pipex_error(piped, "Error ejecutando comando intermedio", cmd_pos, errno);
-	}
+	execve(piped->cmd_routes[cmd_pos], cmd_instr, piped->env);
+	// cualquier código que venga después solo se ejecuta si execve() falla, ya que reemplaza el proceso en caso de éxito
+	free_matrix(cmd_instr);
+	pipex_error(piped, "Error ejecutando comando intermedio", cmd_pos, errno);
 }
 
 void	exec_cmd(t_pipe *piped, int cmd_pos)
@@ -100,10 +98,7 @@ void	exec_cmd(t_pipe *piped, int cmd_pos)
 
 void	pipex(t_pipe *piped)
 {
-	//int		current_pipe_fds[2];
-	//int		previous_pipe_fd;
 	int		cmd_pos;
-	//pid_t	cmd_id;
 
 	piped->previous_pipe_fd = -1;
 	cmd_pos = -1;
@@ -119,15 +114,13 @@ void	pipex(t_pipe *piped)
 		if (piped->previous_pipe_fd != -1)
 			close(piped->previous_pipe_fd);
 		if (piped->here_doc && cmd_pos == 0)
-		{
 			close(piped->heredoc_pipe_fds[0]);
+		if (piped->here_doc && cmd_pos == 0)
 			close(piped->heredoc_pipe_fds[1]);
-		}
 		if (cmd_pos < piped->cmd_nbr - 1)
-		{
 			close(piped->current_pipe_fds[1]);
+		if (cmd_pos < piped->cmd_nbr - 1)
 			piped->previous_pipe_fd = piped->current_pipe_fds[0];
-		}
 		waitpid(piped->cmd_id, NULL, 0);
 	}
 }

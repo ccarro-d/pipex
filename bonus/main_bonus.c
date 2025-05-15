@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ccarro-d <ccarro-d@student.42.fr>          +#+  +:+       +#+        */
+/*   By: cesar <cesar@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/08 14:30:31 by ccarro-d          #+#    #+#             */
-/*   Updated: 2025/05/13 20:23:53 by ccarro-d         ###   ########.fr       */
+/*   Updated: 2025/05/15 13:02:45 by cesar            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,12 @@ void	appropiate_input(t_pipe *piped, char **argv)
 	}
 	if (pipe(piped->heredoc_pipe_fds) == -1)
 		pipex_error(piped, "No se pudo crear el here_doc pipe", -1, errno);
-	pipe(piped->heredoc_pipe_fds);
 	is_delimiter = 0;
 	while (!is_delimiter)
 	{
 		write(1, "> ", 2);
 		line = get_next_line(0);
-		if (ft_strncmp(line, piped->delimiter, ft_strlen(piped->delimiter)) == 0)
+		if (!ft_strncmp(line, piped->delimiter, ft_strlen(piped->delimiter)))
 			is_delimiter = 1;
 		else
 		{
@@ -148,7 +147,7 @@ int	main(int argc, char **argv, char **envp)
 	get_cmds_and_routes(argv, &piped);
 	appropiate_input(&piped, argv);
 	piped.fileout = argv[argc - 1];
-	print_struct(&piped); // para debugging
+	// print_struct(&piped); // para debugging
 	pipex(&piped);
 	free_matrix(piped.cmds);
 	free_matrix(piped.cmd_routes);
